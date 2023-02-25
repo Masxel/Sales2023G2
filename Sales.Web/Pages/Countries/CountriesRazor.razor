@@ -1,0 +1,51 @@
+﻿@page "/countries"
+@inject IRepository repository
+
+<h3>Países</h3>
+
+<a class="btn btn-primary mb-3" href="/countries/create">Nuevo país</a>
+<!-- En esta etiqueta se esta llamando la clase GenericList.razor y le estoy asignando 
+    la lista de paises obtenidos. Como podemos ver, estados abriendo las variables Body y Loading que tambien existen en la clase GenericList, de esta manera asignamos valores a
+    las variables de la clase que estamos llamando; por medio de etiquetas.
+
+    si intentaramos borrar el tag 'Body' podriamos evidenciar que la etiqueta nos va a generar un error porque la variable en la clase GenericList, se pide como obligatoria[EditorRequired]
+-->
+<GenericList MyList="Countries">   
+    <Body>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>País</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var country in Countries!)
+                {
+                    <tr>
+                        <td>
+                            <a class="btn btn-warning">Editar</a>
+                            <button class="btn btn-danger">Borrar</button>
+                        </td>
+                        <td>
+                            @country.Name
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </Body>
+</GenericList>
+
+@code {
+    public List<Country>? Countries { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHttp = await repository.Get<List<Country>>("/api/countries");
+        Countries = responseHttp.Response;
+    }
+
+}
