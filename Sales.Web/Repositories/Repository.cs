@@ -75,6 +75,17 @@ namespace Sales.Web.Repositories
 
             return new HttpResponseWrapper<TResponse>(default,!responseHttp.IsSuccessStatusCode, responseHttp);
         }
+
+        public async Task<HttpResponseWrapper<object>> Put<T>(string url, T model)
+        {
+            var messageJSON = JsonSerializer.Serialize(model);
+            var messageContent = new StringContent(messageJSON, Encoding.UTF8, "application/json");
+            var responseHttp = await _httpClient.PutAsync(url, messageContent);
+            return new HttpResponseWrapper<object>(null, !responseHttp.IsSuccessStatusCode, responseHttp);
+        }
+
     }
+
+
 }
 

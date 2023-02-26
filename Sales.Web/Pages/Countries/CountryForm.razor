@@ -1,4 +1,4 @@
-﻿@inject SweetAlertService sweetAletService
+﻿@inject SweetAlertService sweetAlertService
 
 @*Colocaremos esta etiqueta que nos permitira mantener al usuario dentro del formulario
     sí, por descuido o error intenta cambiar de pagina sin guardar sus datos, así aseguramos
@@ -20,7 +20,7 @@
        </div>
 
        <button class="btn btn-primary" type="submit">Guardar cambios</button>
-        <button class="btn btn-success">Regresar</button>
+        <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
 </EditForm>
 
 @code {
@@ -56,7 +56,7 @@
             return;
         }
 
-        var result = await sweetAletService.FireAsync(new SweetAlertOptions
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmacion",
                 Text = "No has guardado los cambios ¿Deseas abandonar la pagina y perder los cambios?",
