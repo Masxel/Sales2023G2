@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Sales.Shared\Sales.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Categories\" />
+  </ItemGroup>
+
 </Project>
