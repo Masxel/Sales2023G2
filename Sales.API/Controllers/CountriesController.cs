@@ -38,9 +38,24 @@ namespace Sales.API.Controllers
         [HttpPut]
         public async Task<ActionResult> PutAsync(Country country)
         {
-            _dataContext.Update(country);
-            await _dataContext.SaveChangesAsync();
-            return Ok(country);
+            try
+            {
+                _dataContext.Update(country);
+                await _dataContext.SaveChangesAsync();
+                return Ok(country);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe un país con el mismo nombre");
+                }
+                return BadRequest(dbUpdateException.Message);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
         }
 
         [HttpDelete("{id:int}")]
@@ -70,9 +85,17 @@ namespace Sales.API.Controllers
                 await _dataContext.SaveChangesAsync();
                 return Ok(country);
             }
-            catch (Exception ex)
+            catch (DbUpdateException dbUpdateException)
             {
-                return BadRequest(ex.Message);
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest("Ya existe un país con el mismo nombre");
+                }
+                return BadRequest(dbUpdateException.Message);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
             }
         }
         
