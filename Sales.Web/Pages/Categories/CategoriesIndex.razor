@@ -4,7 +4,7 @@
 @inject SweetAlertService sweetAlertService
 
 <h3>Categoría de productos</h3>
-<a class="btn btn-primary mb-3" href="/category/create">Nueva categoría</a>
+<a class="btn btn-primary mb-3" href="/categories/create">Nueva categoría</a>
 <!-- En esta etiqueta se esta llamando la clase GenericList.razor y le estoy asignando
     la lista de paises obtenidos. Como podemos ver, estados abriendo las variables Body y Loading que tambien existen en la clase GenericList, de esta manera asignamos valores a
     las variables de la clase que estamos llamando; por medio de etiquetas.
@@ -25,7 +25,7 @@
                 {
                     <tr>
                         <td>
-                            <a class="btn btn-warning" href="/category/edit/@category.Id">Editar</a>
+                            <a class="btn btn-warning" href="/categories/edit/@category.Id">Editar</a>
                             <button class="btn btn-danger" @onclick=@(()=> DeleteAsync(category.Id))>Borrar</button>
                         </td>
                         <td>
