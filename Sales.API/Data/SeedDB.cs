@@ -17,6 +17,7 @@ namespace Sales.API.Data
         {
             await _context.Database.EnsureCreatedAsync();
             await CheckCountriesAsync();
+            await CheckCategoriesAsync();
         }
 
         private async Task CheckCountriesAsync()
@@ -26,10 +27,24 @@ namespace Sales.API.Data
             {
                 _context.Countries.Add(new Country { Name = "Colombia" });
                 _context.Countries.Add(new Country { Name = "Perú" });
-                _context.Countries.Add(new Country { Name = "Mexico" });
-                _context.Countries.Add(new Country { Name = "Canada" });
+                _context.Countries.Add(new Country { Name = "México" });
+                _context.Countries.Add(new Country { Name = "Canadá" });
                 _context.Countries.Add(new Country { Name = "Brasil" });
-                _context.Countries.Add(new Country { Name = "Panama" });
+                _context.Countries.Add(new Country { Name = "Panamá" });
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task CheckCategoriesAsync()
+        {
+            if (!_context.Categories.Any())
+            {
+                _context.Categories.Add(new Category { Name = "Ropa" });
+                _context.Categories.Add(new Category { Name = "Electrónica" });
+                _context.Categories.Add(new Category { Name = "Vehículos" });
+                _context.Categories.Add(new Category { Name = "Alimentos y bebidas" });
+                _context.Categories.Add(new Category { Name = "Herramientas" });
+                _context.Categories.Add(new Category { Name = "Decoración" });
                 await _context.SaveChangesAsync();
             }
         }
