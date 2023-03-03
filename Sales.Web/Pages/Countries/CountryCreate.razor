@@ -1,0 +1,40 @@
+﻿@page "/countries/create"
+@inject IRepository repository
+@inject NavigationManager navigationManager;
+@inject SweetAlertService sweetAlertService;
+
+<h3>Crear país</h3>
+
+@*En este tag llamamos el countryform de CountryForm.razor
+    Ademas instanciamos la entidad country para crearla. Con esto se validan los Data annotation.
+    *@
+<CountryForm @ref="countryForm" country="country" OnValidSubmit="Create" ReturnAction="Return"></CountryForm>
+@*La linea @ref nos permite referenciar el formulario en una variable para obtener acceso a los eventos 
+    que se desarrollan al usar el formulario. 
+*@
+@code {
+    private Country country = new();
+    //Los signos de interrogación al final de la instancia quiere decir que permite valores nulos
+    private CountryForm? countryForm;
+
+
+    private async Task Create()
+    {
+        var httpResponse = await repository.Post("/api/countries", country);
+        if (httpResponse.Error)
+        {
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        Return();
+    }
+
+    private void Return()
+    {
+        countryForm!.formPostedSuccessFully = true;
+        navigationManager.NavigateTo("/countries");
+    }
+
+}
