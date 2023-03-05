@@ -11,16 +11,32 @@ namespace Sales.API.Controllers
     {
         private readonly DataContext _dataContext;
 
-        public CountriesController(DataContext context)         
+        public CountriesController(DataContext context)
         {
             _dataContext = context;
         }
 
 
         [HttpGet]
-        public async Task<ActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync()
         {
-            return Ok(await _dataContext.Countries.ToListAsync());
+            return Ok(await _dataContext.Countries
+                .Include(x => x.States)
+                .ToListAsync());
+        }
+
+        [HttpGet("full")]
+        public async Task<IActionResult> GetFullAsync()
+        {
+            /*Aquí vamos a pedir que al traer los países, me incluya la colleccion 
+             donde vienen todos los estados de cada país. Y a cada estado solicitarle
+            que me retorne la lista de cada país que les pertenece.
+            La primer 'x' especifica que los países se vincularan a los estados
+            y la segunda 'x'(Con ThenInclude) me incluye las ciudades de cada país*/
+            return Ok(await _dataContext.Countries
+                .Include(x => x.States!)
+                .ThenInclude(x => x.Cities)
+                .ToListAsync());
         }
 
 
