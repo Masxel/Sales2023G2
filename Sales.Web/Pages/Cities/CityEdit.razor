@@ -1,37 +1,36 @@
-﻿@page "/countries/edit/{id:int}"
+﻿@page "/cities/edit/{CityId:int}"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
-<h3>Editar País</h3>
 
-@if(country is null)
+<h3>Editar Ciudad</h3>
+@if (city is null)
 {
     <p>Cargando...</p>
 }
 else
 {
-    <CountryForm @ref="countryForm"  country="country" OnValidSubmit="EditAsync" ReturnAction="Return"/>
+    <CityForm @ref="cityForm" city="city" OnValidSubmit="EditAsync" ReturnAction="Return" />
 }
 
 
-
 @code {
-    //El signo '?' advierte que la propiedad puede ser nula
-    private Country? country;
-    private CountryForm? countryForm;
+    private City? city;
+    private CityForm? cityForm;
+
 
     [Parameter]
-    public int id { get; set; }
+    public int CityId { get; set; }
 
 
     protected override async Task OnInitializedAsync()
     {
-        var responseHttp = await repository.Get<Country>($"/api/countries/{id}");
+        var responseHttp = await repository.Get<City>($"/api/cities/{CityId}");
 
 
         if (responseHttp.Error)
         {
-            if(responseHttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            if (responseHttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 navigationManager.NavigateTo("/countries");
                 return;
@@ -41,13 +40,12 @@ else
             return;
         }
 
-        country = responseHttp.Response;
+        city = responseHttp.Response;
     }
-
 
     private async Task EditAsync()
     {
-        var responseHttp = await repository.Put("/api/countries/", country);
+        var responseHttp = await repository.Put("/api/cities/", city);
         if (responseHttp.Error)
         {
             var message = await responseHttp.GetErrorMessageAsync();
@@ -62,8 +60,7 @@ else
 
     private void Return()
     {
-        countryForm!.formPostedSuccessFully = true;
-        navigationManager.NavigateTo("/countries");
+        cityForm!.formPostedSuccessFully = true;
+        navigationManager.NavigateTo($"/states/details/{city!.StateId}");
     }
-
 }

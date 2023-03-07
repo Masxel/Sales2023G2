@@ -1,0 +1,81 @@
+﻿@inject SweetAlertService sweetAlertService;
+
+@*Colocaremos esta etiqueta que nos permitira mantener al usuario dentro del formulario
+    sí, por descuido o error intenta cambiar de pagina sin guardar sus datos, así aseguramos
+    que sea el usuario quien intencionalmente abandona la página.
+*@
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation"></NavigationLock>
+
+@*Este formulario nos plasma un pequeño fprmulario para crear nuevos países.
+    *@
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <label>Ciudad:</label>
+    <div class="mb-3">
+        @*InputText nos da una caja de texto para escribir los países que queremos crear.
+        *@
+        <InputText class="form-control" @bind-Value="@city.Name"></InputText>
+        <ValidationMessage For="@(() => city.Name)"></ValidationMessage>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Guardar cambios</button>
+    <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
+</EditForm>
+
+@code {
+    private EditContext editContext = null!;
+
+    //Aqui especificamos que el formulario EditForm debe tener un objeto del tipo Country y es obligatorio
+    [Parameter]
+    [EditorRequired]
+    public City city { get; set; } = null!;
+
+    //En los siguientes parametros vemos los Eventos que debe llevar obligatoriamente el formulario.
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback ReturnAction { get; set; }
+
+    public bool formPostedSuccessFully { get; set; }
+
+    protected override void OnInitialized()
+    {
+        editContext = new(city);
+    }
+
+
+    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        var formWasModified = editContext.IsModified();
+        if (!formWasModified || formPostedSuccessFully)
+        {
+            return;
+        }
+
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "No has guardado los cambios ¿Deseas abandonar la pagina y perder los cambios?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Sí"
+            });
+
+
+        var confirm = !string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        context.PreventNavigation();
+
+
+    }
+
+}

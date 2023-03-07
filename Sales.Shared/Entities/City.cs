@@ -20,6 +20,8 @@ namespace Sales.Shared.Entities
 
         public State? State { get; set; }
 
+        public int StateId { get; set; }
+
        
     }
 }
