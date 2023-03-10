@@ -5,12 +5,24 @@
 
 <h3>Categoría de productos</h3>
 
+<div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
+    <div>
+        <a class="btn btn-primary" href="/categories/create">Nueva categoría</a>
+    </div>
+    <div class="mx-2">
+        <input style="width: 400px;" type="text" class="form-control" id="titulo" placeholder="Buscar categoría..." @bind-value="Filter" />
+    </div>
+    <div>
+        <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync">Filtrar</button>
+        <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync">Limpiar</button>
+    </div>
+</div>
+
 <Pagination CurrentPage="currentPage"
             TotalPages="totalPages"
             SelectedPage="SelectedPageAsync"
             Radio="@showPages" />
 
-<a class="btn btn-primary mb-3" href="/categories/create">Nueva categoría</a>
 <!-- En esta etiqueta se esta llamando la clase GenericList.razor y le estoy asignando
     la lista de paises obtenidos. Como podemos ver, estados abriendo las variables Body y Loading que tambien existen en la clase GenericList, de esta manera asignamos valores a
     las variables de la clase que estamos llamando; por medio de etiquetas.
@@ -50,6 +62,15 @@
     private int totalPages;
     private int showPages;
 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Page { get; set; } = "";
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Filter { get; set; } = "";
+
+
     private async Task SelectedPageAsync(int page)
     {
         currentPage = page;
@@ -64,8 +85,25 @@
 
     private async Task LoadAsync(int page = 1)
     {
-        string url1 = $"api/categories?page={page}";
-        string url2 = $"api/categories/totalPages";
+        if (!string.IsNullOrWhiteSpace(Page))
+        {
+            page = Convert.ToInt32(Page);
+        }
+
+        string url1 = string.Empty;
+        string url2 = string.Empty;
+
+        if (string.IsNullOrEmpty(Filter))
+        {
+            url1 = $"api/categories?page={page}";
+            url2 = $"api/categories/totalPages";
+        }
+        else
+        {
+            url1 = $"api/categories?page={page}&filter={Filter}";
+            url2 = $"api/categories/totalPages?filter={Filter}";
+        }
+
 
         var responseHppt = await repository.Get<List<Category>>(url1);
         var responseHppt2 = await repository.Get<int>(url2);
@@ -116,6 +154,17 @@
         await LoadAsync();
     }
 
+    private async Task CleanFilterAsync()
+    {
+        Filter = string.Empty;
+        await ApplyFilterAsync();
+    }
 
+    private async Task ApplyFilterAsync()
+    {
+        int page = 1;
+        await LoadAsync(page);
+        await SelectedPageAsync(page);
+    }
 
 }
