@@ -32,42 +32,55 @@
                 Enable = previousLinkEnable
             });
 
+        //if (CurrentPage <= 10 && TotalPages <= 10)
+        //{
 
-
-        for (int i = 1; i <= TotalPages; i++)
+        //    pintar(TotalPages);
+        //}
+        //if (CurrentPage <= 10 && TotalPages > 10)
+        //{
+        //    pintar(10);
+        //}
+        //if (CurrentPage > 10 && TotalPages > 10)
+        //{
+        //    if (TotalPages < (CurrentPage + 1))
+        //    {
+        //        pintar(CurrentPage + 1, CurrentPage - 10);
+        //    }
+        //    else
+        //    {
+        //        pintar(TotalPages);
+        //    }
+        //}
+        if (TotalPages <= 10 && TotalPages > 0)
         {
-            if (i >= CurrentPage - Radio && i <= CurrentPage + Radio)
+            pintar(TotalPages);
+        }
+        if (TotalPages > 10)
+        {
+            if(CurrentPage <= 10)
             {
-
-                if(Radio == 10)
+                pintar(10);
+            }
+            if(CurrentPage > 10)
+            {
+                if (CurrentPage==TotalPages)
                 {
-                    if (CurrentPage != 10 && i <= 10)
-                    {
-
-                        Links.Add(new PageModel
-                            {
-                                Page = i,
-                                Enable = CurrentPage == i,
-                                Text = $"{i}"
-                            });
-                    }
-
+                    pintar(TotalPages, TotalPages - 9);
                 }
-                else
+                if (CurrentPage<TotalPages)                
                 {
 
-                    
-                        Links.Add(new PageModel
-                            {
-                                Page = i,
-                                Enable = CurrentPage == i,
-                                Text = $"{i}"
-                            });
-         
+                    pintar(CurrentPage, CurrentPage - 9);
+
                 }
-    
             }
         }
+
+        
+
+        // for (int i = 1; i <= TotalPages; i++)
+
 
         var linkNextEnable = CurrentPage != TotalPages;
         var linkNextPage = CurrentPage + 1;
@@ -78,6 +91,24 @@
                 Enable = linkNextEnable
             });
 
+    }
+
+    private void pintar(int cantidad, int inicial = 1)
+    {
+        for (int i = inicial; i <= cantidad; i++)
+        {
+            //if (i >= CurrentPage - Radio && i <= CurrentPage + Radio)
+            //{
+
+                Links.Add(new PageModel
+                    {
+                        Page = i,
+                        Enable = CurrentPage == i,
+                        Text = $"{i}"
+                    });
+
+            //}
+        }
     }
 
     private async Task InternalSelectedPage(PageModel pageModel)
