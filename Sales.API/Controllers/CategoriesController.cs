@@ -22,23 +22,36 @@ namespace Sales.API.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
+        public async Task<ActionResult> Get([FromQuery] PaginationDTO pagination)
         {
             var queryable = _dataContext.Categories.AsQueryable();
-            return Ok(await queryable.OrderBy(x => x.Name).Paginate(pagination).
-                ToListAsync());
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+            return Ok(await queryable
+                .OrderBy(x => x.Name)
+                .Paginate(pagination)
+                .ToListAsync());
         }
 
-
         [HttpGet("totalPages")]
-        public async Task<IActionResult> GetPages([FromQuery] PaginationDTO pagination)
+        public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
         {
             var queryable = _dataContext.Categories.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
         }
-
+       
 
         [HttpGet("{id}")]
         public async Task<ActionResult> GetAsync(int id)

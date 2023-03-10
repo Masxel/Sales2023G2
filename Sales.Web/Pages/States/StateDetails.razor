@@ -15,13 +15,18 @@ else
         <a class="btn btn-success mb-3" href="/countries/details/@state.CountryId">Regresar</a>
     </div>
 
+    <Pagination CurrentPage="currentPage"
+            TotalPages="totalPages"
+            SelectedPage="SelectedPage" />
+
+
     <GenericList MyList="cities">
         <Body>
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Ciudades</th>
-                        <th></th>
+                        <th style="width:180px"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,6 +56,8 @@ else
 
     private State state;
     private List<City>? cities;
+    private int currentPage = 1;
+    private int totalPages;
 
 
     protected override async Task OnInitializedAsync()
@@ -58,26 +65,24 @@ else
         await LoadAsync();
     }
 
-    private async Task LoadAsync()
+    private async Task SelectedPage(int page)
     {
-        var responseHttp = await repository.Get<State>($"/api/states/{StateId}");
+        currentPage = page;
+        await LoadAsync(page);
+    }
 
-        if (responseHttp.Error)
-        {
-            if (responseHttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                navigationManager.NavigateTo("/countries");
-                return;
-            }
 
-            var message = await responseHttp.GetErrorMessageAsync();
+    private async Task LoadAsync(int page = 1)
+    {
+        string url1 = $"api/cities?id={StateId}&page={page}";
+        string url2 = $"api/cities/totalPages?id={StateId}";
+        var responseHppt1 = await repository.Get<State>($"api/states/{StateId}");
+        var responseHppt2 = await repository.Get<List<City>>(url1);
+        var responseHppt3 = await repository.Get<int>(url2);
+        state = responseHppt1.Response;
+        cities = responseHppt2.Response;
+        totalPages = responseHppt3.Response;
 
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
-        }
-
-        state = responseHttp.Response;
-        cities = state!.Cities!.ToList();
     }
 
 
