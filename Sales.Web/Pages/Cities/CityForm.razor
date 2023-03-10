@@ -1,30 +1,37 @@
-﻿@inject SweetAlertService sweetAlertService
+﻿@inject SweetAlertService sweetAlertService;
 
+@*Colocaremos esta etiqueta que nos permitira mantener al usuario dentro del formulario
+    sí, por descuido o error intenta cambiar de pagina sin guardar sus datos, así aseguramos
+    que sea el usuario quien intencionalmente abandona la página.
+*@
 <NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation"></NavigationLock>
 
+@*Este formulario nos plasma un pequeño fprmulario para crear nuevos países.
+    *@
 <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
-   <DataAnnotationsValidator/>
-   
-       <label>Categoría:</label>
-       <div class="mb-3">
+    <DataAnnotationsValidator />
+
+    <label>Ciudad:</label>
+    <div class="mb-3">
         @*InputText nos da una caja de texto para escribir los países que queremos crear.
         *@
-           <InputText class="form-control" @bind-Value="@category.Name"></InputText>
-           <ValidationMessage For="@(() => category.Name)"></ValidationMessage>
-       </div>
+        <InputText class="form-control" @bind-Value="@city.Name"></InputText>
+        <ValidationMessage For="@(() => city.Name)"></ValidationMessage>
+    </div>
 
-       <button class="btn btn-primary" type="submit">Guardar cambios</button>
-        <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
+    <button class="btn btn-primary" type="submit">Guardar cambios</button>
+    <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
 </EditForm>
 
 @code {
-
     private EditContext editContext = null!;
 
+    //Aqui especificamos que el formulario EditForm debe tener un objeto del tipo Country y es obligatorio
     [Parameter]
     [EditorRequired]
-    public Category category { get; set; } = null!;
+    public City city { get; set; } = null!;
 
+    //En los siguientes parametros vemos los Eventos que debe llevar obligatoriamente el formulario.
     [Parameter]
     [EditorRequired]
     public EventCallback OnValidSubmit { get; set; }
@@ -37,7 +44,7 @@
 
     protected override void OnInitialized()
     {
-        editContext = new(category);
+        editContext = new(city);
     }
 
 
@@ -67,5 +74,8 @@
         }
 
         context.PreventNavigation();
+
+
     }
+
 }

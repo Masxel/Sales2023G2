@@ -7,29 +7,24 @@ using Sales.Shared.Entities;
 
 namespace Sales.API.Controllers
 {
+
     [ApiController]
-    [Route("/api/categories")]
-    public class CategoriesController : ControllerBase
+    [Route("/api/cities")]
+    public class CitiesController : ControllerBase
     {
-       
         private readonly DataContext _dataContext;
 
-
-        public CategoriesController(DataContext context)
+        public CitiesController(DataContext dataContext)
         {
-            _dataContext = context;
+            _dataContext = dataContext;
         }
-
 
         [HttpGet]
         public async Task<ActionResult> Get([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _dataContext.Categories.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(pagination.Filter))
-            {
-                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
-            }
+            var queryable = _dataContext.Cities
+                .Where(x => x.State!.Id == pagination.Id)
+                .AsQueryable();
 
             return Ok(await queryable
                 .OrderBy(x => x.Name)
@@ -37,47 +32,46 @@ namespace Sales.API.Controllers
                 .ToListAsync());
         }
 
+
         [HttpGet("totalPages")]
         public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
         {
-            var queryable = _dataContext.Categories.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(pagination.Filter))
-            {
-                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
-            }
+            var queryable = _dataContext.Cities
+                .Where(x => x.State!.Id == pagination.Id)
+                .AsQueryable();
 
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
         }
-       
+
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult> GetAsync(int id)
         {
-            var category = await _dataContext.Categories.FirstOrDefaultAsync(x => x.Id == id);
-            if (category == null)
+            var cities = await _dataContext.Cities.FirstOrDefaultAsync(x => x.Id == id);
+            if (cities == null)
             {
                 return NotFound();
             }
-            return Ok(category);
+            return Ok(cities);
         }
 
         [HttpPut]
-        public async Task<ActionResult> PutAsync(Category category)
+        public async Task<ActionResult> PutAsync(City city)
         {
             try
             {
-                _dataContext.Update(category);
+                _dataContext.Update(city);
                 await _dataContext.SaveChangesAsync();
-                return Ok(category);
+                return Ok(city);
             }
             catch (DbUpdateException dbUpdateException)
             {
                 if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                 {
-                    return BadRequest("Ya existe una categoría con el mismo nombre");
+                    return BadRequest("Ya existe una ciudad con el mismo nombre");
                 }
                 return BadRequest(dbUpdateException.Message);
             }
@@ -90,14 +84,14 @@ namespace Sales.API.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            var category = await _dataContext.Categories.FirstOrDefaultAsync(x => x.Id == id);
-            if (category == null)
+            var cities = await _dataContext.Cities.FirstOrDefaultAsync(x => x.Id == id);
+            if (cities == null)
             {
                 return NotFound();
             }
 
 
-            _dataContext.Remove(category);
+            _dataContext.Remove(cities);
             await _dataContext.SaveChangesAsync();
             return NoContent();
         }
@@ -106,19 +100,19 @@ namespace Sales.API.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> PostAsync(Category category)
+        public async Task<ActionResult> PostAsync(City cities)
         {
             try
             {
-                _dataContext.Categories.Add(category);
+                _dataContext.Cities.Add(cities);
                 await _dataContext.SaveChangesAsync();
-                return Ok(category);
+                return Ok(cities);
             }
             catch (DbUpdateException dbUpdateException)
             {
                 if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                 {
-                    return BadRequest("Ya existe una categoría con el mismo nombre");
+                    return BadRequest("Ya existe una ciudad con el mismo nombre");
                 }
                 return BadRequest(dbUpdateException.Message);
             }
@@ -130,6 +124,6 @@ namespace Sales.API.Controllers
 
 
 
-
     }
 }
+

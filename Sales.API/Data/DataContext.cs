@@ -13,6 +13,8 @@ public class DataContext : DbContext
 
     public DbSet<Country> Countries { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<City> Cities { get; set; }
+    public DbSet<State> States { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,6 +22,8 @@ public class DataContext : DbContext
         //Tanto País como categoria tienen el nombre como clave unica, debido a que una categoria como 'Ropa', simplemente existe una vez y las prendas o tipos de vestimentas son productos arraigados a esta categoría.
         modelBuilder.Entity<Country>().HasIndex(x => x.Name).IsUnique();
         modelBuilder.Entity<Category>().HasIndex(x => x.Name).IsUnique();
+        modelBuilder.Entity<State>().HasIndex("CountryId", "Name").IsUnique();
+        modelBuilder.Entity<City>().HasIndex("StateId", "Name").IsUnique();
     }
 
 
