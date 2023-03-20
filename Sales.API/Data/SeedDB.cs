@@ -24,7 +24,7 @@ namespace Sales.API.Data
         public async Task SeedAsync()
         {
             await _context.Database.EnsureCreatedAsync();
-            //await CheckCountriesAsync();
+           // await CheckCountriesAsync();
             await CheckCategoriesAsync();
             await CheckRolesAsync();
             await CheckUserAsync("101", "Johan", "Daza", "johandaza231356@correo.itm.edu.co", "3186611796", "Carrera 22 #22-22", UserType.Admin);
