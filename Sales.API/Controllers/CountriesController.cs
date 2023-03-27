@@ -147,6 +147,12 @@ namespace Sales.API.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpGet("combo")]
+        public async Task<ActionResult> GetCombo()
+        {
+            return Ok(await _dataContext.Countries.ToListAsync());
+        }
 
 
     }
