@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sales.API.Data;
 using Sales.API.Helpers;
@@ -8,6 +10,7 @@ using Sales.Shared.Entities;
 namespace Sales.API.Controllers
 {
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("/api/countries")]
     public class CountriesController : ControllerBase
     {
@@ -23,7 +26,7 @@ namespace Sales.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
-            var queryable =  _dataContext.Countries
+            var queryable = _dataContext.Countries
                 .Include(x => x.States).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
@@ -70,10 +73,10 @@ namespace Sales.API.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult> GetAsync(int id)
         {
-            var country = await _dataContext.Countries.Include(x => x.States)
-                .ThenInclude(x => x.Cities)               
+            var country = await _dataContext.Countries.Include(x => x.States!)
+                .ThenInclude(x => x.Cities)
                 .FirstOrDefaultAsync(x => x.Id == id);
-            if(country == null)
+            if (country == null)
             {
                 return NotFound();
             }
@@ -106,8 +109,8 @@ namespace Sales.API.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-          var country = await _dataContext.Countries.FirstOrDefaultAsync(x => x.Id == id);
-            if(country == null)
+            var country = await _dataContext.Countries.FirstOrDefaultAsync(x => x.Id == id);
+            if (country == null)
             {
                 return NotFound();
             }
@@ -143,7 +146,13 @@ namespace Sales.API.Controllers
                 return BadRequest(exception.Message);
             }
         }
-        
+
+        [AllowAnonymous]
+        [HttpGet("combo")]
+        public async Task<ActionResult> GetCombo()
+        {
+            return Ok(await _dataContext.Countries.ToListAsync());
+        }
 
 
     }

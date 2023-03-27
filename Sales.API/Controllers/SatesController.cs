@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sales.API.Data;
 using Sales.API.Helpers;
@@ -8,6 +10,7 @@ using Sales.Shared.Entities;
 namespace Sales.API.Controllers
 {
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("/api/states")]
     public class SatesController : ControllerBase
     {
@@ -28,6 +31,12 @@ namespace Sales.API.Controllers
                 .Where(x => x.Country!.Id == pagination.Id)
                 .AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name!.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+
             return Ok(await queryable
                 .OrderBy(x => x.Name)
                 .Paginate(pagination)
@@ -40,6 +49,11 @@ namespace Sales.API.Controllers
             var queryable = _dataContext.States
                 .Where(x => x.Country!.Id == pagination.Id)
                 .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name!.ToLower().Contains(pagination.Filter.ToLower()));
+            }
 
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
@@ -129,6 +143,14 @@ namespace Sales.API.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpGet("combo/{countryId:int}")]
+        public async Task<ActionResult> GetCombo(int countryId)
+        {
+            return Ok(await _dataContext.States
+                .Where(x => x.CountryId == countryId)
+                .ToListAsync());
+        }
 
 
     }

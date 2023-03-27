@@ -22,6 +22,8 @@ namespace Sales.Shared.Entities
 
         public int StateId { get; set; }
 
+        public ICollection<User>? Users { get; set; }
+
        
     }
 }
