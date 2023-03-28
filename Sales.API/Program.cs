@@ -19,6 +19,13 @@ builder.Services.AddControllers()
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("name=DefaultConnection"));
+//AddTransient solo se ejecuta una vez para realizar la insercción de datos, y no se volvera a ejecutar por ninguna otra clase
+builder.Services.AddTransient<SeedDB>();
+builder.Services.AddScoped<IUserHelper, UserHelper>();
+builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddScoped<IFileStorage, FileStorage>();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Sales API", Version = "v1" });
@@ -51,10 +58,7 @@ builder.Services.AddSwaggerGen(c =>
         });
 });
 
-builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("name=DefaultConnection"));
-//AddTransient solo se ejecuta una vez para realizar la insercción de datos, y no se volvera a ejecutar por ninguna otra clase
-builder.Services.AddTransient<SeedDB>();
-builder.Services.AddScoped<IApiService, ApiService>();
+
 builder.Services.AddIdentity<User, IdentityRole>(x =>
 {
     x.User.RequireUniqueEmail = true;
@@ -65,8 +69,6 @@ builder.Services.AddIdentity<User, IdentityRole>(x =>
     x.Password.RequireUppercase = false;
 }).AddEntityFrameworkStores<DataContext>().
 AddDefaultTokenProviders();
-
-builder.Services.AddScoped<IUserHelper, UserHelper>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(x => x.TokenValidationParameters = new TokenValidationParameters
