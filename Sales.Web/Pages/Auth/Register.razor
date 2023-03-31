@@ -10,6 +10,12 @@
 <EditForm Model="userDTO" OnValidSubmit="CreteUserAsync">
     <DataAnnotationsValidator />
 
+    @if (loading)
+    {
+        <div class="spinner" />
+    }
+    else
+    {
     <div class="row">
         <div class="col-6">
             <div class="mb-3">
@@ -124,7 +130,7 @@
         </div>
     </div>
     <button class="btn btn-primary" type="submit">Registrar</button>
-
+    }
 </EditForm>
 
 
@@ -136,6 +142,7 @@
     private List<State>? states;
     private List<City>? cities;
     private string? imageUrl;
+    private bool loading = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -146,10 +153,11 @@
             imageUrl = userDTO.Photo;
             userDTO.Photo = null;
         }
+        loading = false;
 
     }
 
-        private void ImageSelected(string imagenBase64)
+    private void ImageSelected(string imagenBase64)
     {
         userDTO.Photo = imagenBase64;
         imageUrl = null;
@@ -179,7 +187,7 @@
         }
 
         countries = responseHttp.Response;
-        
+
     }
 
     private async Task LoadStatesAsyn(int countryId)
@@ -212,6 +220,7 @@
 
     private async Task CreteUserAsync()
     {
+        loading = true;
         userDTO.UserName = userDTO.Email;
         userDTO.UserType = UserType.User;
         var responseHttp = await repository.Post<UserDTO, TokenDTO>("/api/accounts/CreateUser", userDTO);
@@ -219,10 +228,11 @@
         {
             var message = await responseHttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            loading = false;
             return;
         }
-
-        await loginService.LoginAsync(responseHttp.Response!.Token);
+        loading = false;
+        await sweetAlertService.FireAsync("Confirmación", "Su cuenta ha sido creada con éxito. Se te ha enviado un correo electrónico con las instrucciones para activar tu usuario.", SweetAlertIcon.Info);
         navigationManager.NavigateTo("/");
     }
 }
