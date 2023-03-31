@@ -8,10 +8,10 @@
     <div class="col-md-4  offset-md-4">
 
 
-<EditForm Model="loginDTO" OnValidSubmit="LoginAsync">
-    <DataAnnotationsValidator />
+        <EditForm Model="loginDTO" OnValidSubmit="LoginAsync">
+            <DataAnnotationsValidator />
 
-               <div class="card bg-light">
+            <div class="card bg-light">
                 <div class="card-header justify-content-center">
                     <span>
                         <i class="oi oi-account-login" /> Iniciar Sesión
@@ -20,24 +20,27 @@
                 </div>
                 <div class="card-body">
 
-            <div class="mb-3">
-                <label>Email:</label>
-                <div>
-                    <InputText class="form-control" @bind-Value="@loginDTO.Email" />
-                    <ValidationMessage For="@(() => loginDTO.Email)" />
+                    <div class="mb-3">
+                        <label>Email:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@loginDTO.Email" />
+                            <ValidationMessage For="@(() => loginDTO.Email)" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Contraseña:</label>
+                        <div>
+                            <InputText type="password" class="form-control" @bind-Value="@loginDTO.Password" />
+                            <ValidationMessage For="@(() => loginDTO.Password)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a class="bbtn btn-link" href="/ResendToken">Reenviar correro de activación de cuenta</a>
                 </div>
             </div>
-            <div class="mb-3">
-                <label>Contraseña:</label>
-                <div>
-                    <InputText type="password" class="form-control" @bind-Value="@loginDTO.Password" />
-                    <ValidationMessage For="@(() => loginDTO.Password)" />
-                </div>
-            </div>
-        </div>
+        </EditForm>
     </div>
-</EditForm>
-</div>
 </div>
 
 @code {
