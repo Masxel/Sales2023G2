@@ -176,21 +176,38 @@ namespace Sales.API.Data
         {
             if (!_context.Categories.Any())
             {
-                _context.Categories.Add(new Category { Name = "Entretenimiento" });
-                _context.Categories.Add(new Category { Name = "Electrónica" });
-                _context.Categories.Add(new Category { Name = "Vehiculo" });
-                _context.Categories.Add(new Category { Name = "Alimentos y bebidas" });
-                _context.Categories.Add(new Category { Name = "Herramientas" });
-                _context.Categories.Add(new Category { Name = "Decoración" });
+                _context.Categories.Add(new Category { Name = "Deportes" });
+                _context.Categories.Add(new Category { Name = "Calzado" });
+                _context.Categories.Add(new Category { Name = "Tecnología " });
+                _context.Categories.Add(new Category { Name = "Lenceria" });
+                _context.Categories.Add(new Category { Name = "Erótica" });
+                _context.Categories.Add(new Category { Name = "Comida" });
+                _context.Categories.Add(new Category { Name = "Ropa" });
+                _context.Categories.Add(new Category { Name = "Jugetes" });
+                _context.Categories.Add(new Category { Name = "Mascotas" });
+                _context.Categories.Add(new Category { Name = "Autos" });
+                _context.Categories.Add(new Category { Name = "Cosmeticos" });
+                _context.Categories.Add(new Category { Name = "Hogar" });
+                _context.Categories.Add(new Category { Name = "Jardín" });
+                _context.Categories.Add(new Category { Name = "Ferreteria" });
+                _context.Categories.Add(new Category { Name = "Video Juegos" });
                 await _context.SaveChangesAsync();
             }
         }
+
 
         private async Task<User> CheckUserAsync(string document, string firstName, string lastName, string email, string phone, string address, UserType userType)
         {
             var user = await _userHelper.GetUserAsync(email);
             if (user == null)
             {
+
+                var city = await _context.Cities.FirstOrDefaultAsync(x => x.Name == "Medellín");
+                if (city == null)
+                {
+                    city = await _context.Cities.FirstOrDefaultAsync();
+                }
+
                 user = new User
                 {
                     FirstName = firstName,
@@ -200,12 +217,16 @@ namespace Sales.API.Data
                     PhoneNumber = phone,
                     Address = address,
                     Document = document,
-                    City = _context.Cities.FirstOrDefault(),
+                    City = city,
                     UserType = userType,
                 };
 
                 await _userHelper.AddUserAsync(user, "123456");
                 await _userHelper.AddUserToRoleAsync(user, userType.ToString());
+
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                await _userHelper.ConfirmEmailAsync(user, token);
+
             }
 
             return user;

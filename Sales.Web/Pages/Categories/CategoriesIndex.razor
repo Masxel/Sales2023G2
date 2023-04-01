@@ -3,19 +3,23 @@
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
 
-<h3>Categoría de productos</h3>
 
-<div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
-    <div>
-        <a class="btn btn-primary" href="/categories/create">Nueva categoría</a>
+<div class="card">
+    <div class="card-header">
+        <span>
+            <i class="oi oi-globe"></i> Categoria
+            <a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModal())><i class="oi oi-plus"></i>Nueva categoría</a>  @*TODO: ShowModal para Modal cascada*@
+        </span>
     </div>
+    <div class="card-body">
+<div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
     <div class="mx-2">
         <input style="width: 400px;" type="text" class="form-control" id="titulo" placeholder="Buscar categoría..." @bind-value="Filter" />
     </div>
-    <div>
-        <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync">Filtrar</button>
-        <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync">Limpiar</button>
-    </div>
+        <div class="mx-1">
+            <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync"><i class="oi oi-layers" /> Filtrar</button>
+            <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync"><i class="oi oi-ban" /> Limpiar</button>
+        </div>
 </div>
 
 <Pagination CurrentPage="currentPage"
@@ -43,7 +47,7 @@
                 {
                     <tr>
                         <td>
-                            <a class="btn btn-warning" href="/categories/edit/@category.Id">Editar</a>
+                            <a @onclick=@(() => ShowModal(category.Id, true)) class="btn btn-warning">Editar</a>  @*TODO: ShowModal para Modal cascada*@
                             <button class="btn btn-danger" @onclick=@(()=> DeleteAsync(category.Id))>Borrar</button>
                         </td>
                         <td>
@@ -56,6 +60,8 @@
 
     </Body>
 </GenericList>
+</div>
+</div>
 @code {
     public List<Category>? Categories { get; set; }
     private int currentPage = 1;
@@ -70,6 +76,9 @@
     [SupplyParameterFromQuery]
     public string Filter { get; set; } = string.Empty;
 
+    [CascadingParameter] //TODO: PARA ModalCAscada
+    IModalService Modal { get; set; } = default!;
+
 
     private async Task SelectedPageAsync(int page)
     {
@@ -82,6 +91,27 @@
     {
         await LoadAsync();
     }
+
+    private async Task ShowModal(int id = 0, bool isEdit = false)
+    {
+        IModalReference modalReference;
+
+        if (isEdit)
+        {
+            modalReference = Modal.Show<CategoryEdit>(string.Empty, new ModalParameters().Add("id", id));
+        }
+        else
+        {
+            modalReference = Modal.Show<CategoryCreate>();
+        }
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
+    }
+
 
     private async Task LoadAsync(int page = 1)
     {

@@ -7,7 +7,7 @@
 <h3>Editar Estado/Departamento</h3>
 @if (state is null)
 {
-        <p>Cargando...</p>
+        <div class="spinner"/>
 }
 else
 {
@@ -22,6 +22,9 @@ else
 
     [Parameter]
     public int StateId { get; set; }
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
 
     protected override async Task OnInitializedAsync()
@@ -53,7 +56,7 @@ else
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
-
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
 
 
