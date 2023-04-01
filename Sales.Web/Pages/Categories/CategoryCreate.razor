@@ -8,6 +8,10 @@
 <CategoryForm @ref="categoryForm" category="category" OnValidSubmit="Create" ReturnAction="Return"></CategoryForm>
 
 @code {
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+
     private Category category = new();
     //Los signos de interrogación al final de la instancia quiere decir que permite valores nulos
     private CategoryForm? categoryForm;
@@ -23,6 +27,7 @@
             return;
         }
 
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
     }
 

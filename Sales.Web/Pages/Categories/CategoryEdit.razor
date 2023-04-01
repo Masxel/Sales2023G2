@@ -24,6 +24,8 @@ else
     [Parameter]
     public int id { get; set; }
 
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;//TODO: Para implementar en el metodo cascada
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,6 +57,9 @@ else
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
+
+        await BlazoredModal.CloseAsync(ModalResult.Ok()); //TODO: Para implementar en el metodo cascada
+
 
         Return();
 

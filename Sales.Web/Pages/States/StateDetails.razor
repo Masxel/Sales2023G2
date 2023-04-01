@@ -14,7 +14,7 @@ else
         <div class="card-header">
             <span>
                 <i class="oi oi-home"></i> @state.Name
-                <a class="btn btn-sm btn-primary float-end" href="/cities/create/@StateId"><i class="oi oi-plus"></i> Adicionar Ciudad</a>
+                <a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModal())><i class="oi oi-plus"></i> Adicionar Ciudad</a>
                 <a class="btn btn-sm btn-success float-end mx-2" href="/countries/details/@state.CountryId"><i class="oi oi-arrow-left"></i> Regresar</a>
             </span>
         </div>
@@ -49,7 +49,7 @@ else
                                 @city.Name
                             </td>
                             <td>
-                                 <a href="/cities/edit/@city.Id" class="btn btn-warning btn-sm"><i class="oi oi-pencil" /> Editar</a>
+                                 <a @onclick=@(() => ShowModal(state.Id, true)) class="btn btn-warning btn-sm"><i class="oi oi-pencil" /> Editar</a>
                                  <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteAsync(city.Id))><i class="oi oi-trash" /> Borrar</button>
                             </td>
                         </tr>
@@ -83,6 +83,10 @@ else
     [SupplyParameterFromQuery]
     public string Filter { get; set; } = string.Empty;
 
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+
+
     protected override async Task OnInitializedAsync()
     {
         await LoadAsync();
@@ -94,6 +98,25 @@ else
         await LoadAsync(page);
     }
 
+    private async Task ShowModal(int id = 0, bool isEdit = false)
+    {
+        IModalReference modalReference;
+
+        if (isEdit)
+        {
+            modalReference = Modal.Show<Cities.CityEdit>(string.Empty, new ModalParameters().Add("CityId", id));
+        }
+        else
+        {
+            modalReference = Modal.Show<Cities.CityCreate>();
+        }
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
+    }
 
     private async Task LoadAsync(int page = 1)
     {

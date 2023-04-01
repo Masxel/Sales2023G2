@@ -19,10 +19,14 @@ else
 @code {
     //El signo '?' advierte que la propiedad puede ser nula
     private Country? country;
+
     private CountryForm? countryForm;
 
     [Parameter]
     public int id { get; set; }
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
 
     protected override async Task OnInitializedAsync()
@@ -56,9 +60,9 @@ else
             return;
         }
 
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+
         Return();
-
-
     }
 
     private void Return()

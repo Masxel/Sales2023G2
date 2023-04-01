@@ -14,6 +14,10 @@
     que se desarrollan al usar el formulario. 
 *@
 @code {
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+
     private Country country = new();
     //Los signos de interrogación al final de la instancia quiere decir que permite valores nulos
     private CountryForm? countryForm;
@@ -29,6 +33,7 @@
             return;
         }
 
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
     }
 

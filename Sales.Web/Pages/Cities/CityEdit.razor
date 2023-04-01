@@ -23,6 +23,8 @@ else
     [Parameter]
     public int CityId { get; set; }
 
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,9 +56,9 @@ else
             return;
         }
 
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+
         Return();
-
-
     }
 
     private void Return()
