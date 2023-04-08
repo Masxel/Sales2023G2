@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sales.Shared.Entities.Sales.Shared.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -16,5 +17,11 @@ namespace Sales.Shared.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         [MaxLength(100, ErrorMessage = "El campo {0} no puede tener mas de {1} caractéres.")]
         public string Name { get; set; } = null!;
+
+        public ICollection<ProductCategory>? ProductCategories { get; set; }
+
+        [Display(Name = "Productos")]
+        public int ProductCategoriesNumber => ProductCategories == null ? 0 : ProductCategories.Count;
+
     }
 }
