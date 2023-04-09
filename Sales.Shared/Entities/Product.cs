@@ -41,6 +41,8 @@ namespace Sales.Shared.Entities
         [Display(Name = "Categorías")]
         public int ProductCategoriesNumber => ProductCategories == null ? 0 : ProductCategories.Count;
 
+        public ICollection<TemporalSale>? TemporalSales { get; set; }
+
         public ICollection<ProductImage>? ProductImages { get; set; }
 
         [Display(Name = "Imágenes")]
