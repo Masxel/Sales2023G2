@@ -25,6 +25,7 @@ namespace Sales.API.Controllers
             _fileStorage = fileStorage;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult> Get([FromQuery] PaginationDTO pagination)
         {
@@ -44,7 +45,7 @@ namespace Sales.API.Controllers
                 .ToListAsync());
         }
 
-
+        [AllowAnonymous]
         [HttpGet("totalPages")]
         public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
         {
@@ -61,6 +62,7 @@ namespace Sales.API.Controllers
             return Ok(totalPages);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetAsync(int id)
         {
@@ -122,6 +124,7 @@ namespace Sales.API.Controllers
                 return BadRequest(exception.Message);
             }
         }
+
 
         [HttpPost("addImages")]
         public async Task<ActionResult> PostAddImagesAsync(ImageDTO imageDTO)
