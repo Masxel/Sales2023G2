@@ -32,6 +32,9 @@ namespace Sales.Shared.Entities
         [Display(Name = "Tipo de usuario")]
         public UserType UserType { get; set; }
 
+        public ICollection<TemporalSale>? TemporalSales { get; set; }
+
+        public ICollection<Sale>? Sales { get; set; }
         public City? City { get; set; }
 
         [Display(Name = "Ciudad")]

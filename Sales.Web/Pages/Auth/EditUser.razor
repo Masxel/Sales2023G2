@@ -10,17 +10,19 @@
 }
 else
 {
+    <div class="card-header">
+        <span>
+            <i class="oi oi-person" /> Editar Usuario
+            @*<a class="btn btn-sm btn-secondary float-end" href="/changePassword"><i class="oi oi-key" /> Cambiar Contraseña</a>*@
+            <a class="btn btn-sm btn-secondary float-end" @onclick=@(() => ShowModal())><i class="oi oi-key" /> Cambiar Contraseña</a>
+            <button class="btn btn-sm btn-primary float-end mx-2" type="submit"><i class="oi oi-check" /> Guardar Cambios</button>
+        </span>
+    </div>
     <EditForm Model="user" OnValidSubmit="SaveUserAsync">
         <DataAnnotationsValidator />
 
         <div class="card">
-            <div class="card-header">
-                <span>
-                    <i class="oi oi-person" /> Editar Usuario
-                    <a class="btn btn-sm btn-secondary float-end" href="/changePassword"><i class="oi oi-key" /> Cambiar Contraseña</a>
-                    <button class="btn btn-sm btn-primary float-end mx-2" type="submit"><i class="oi oi-check" /> Guardar Cambios</button>
-                </span>
-            </div>
+
             <div class="card-body">
                 <div class="row">
                     <div class="col-6">
@@ -124,6 +126,10 @@ else
     private List<City>? cities;
     private string? imageUrl;
 
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+
+
     protected override async Task OnInitializedAsync()
     {
         await LoadUserAsyc();
@@ -138,6 +144,20 @@ else
         }
 
     }
+
+    private async Task ShowModal()
+    {
+        IModalReference modalReference;
+
+        modalReference = Modal.Show<ChangePassword>(string.Empty, new ModalParameters());
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadUserAsyc();
+        }
+    }
+
 
     private async Task LoadUserAsyc()
     {
