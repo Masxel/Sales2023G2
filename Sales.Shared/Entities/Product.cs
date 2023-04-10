@@ -45,6 +45,8 @@ namespace Sales.Shared.Entities
 
         public ICollection<ProductImage>? ProductImages { get; set; }
 
+        public ICollection<SaleDetail>? SaleDetails { get; set; }
+
         [Display(Name = "Imágenes")]
         public int ProductImagesNumber => ProductImages == null ? 0 : ProductImages.Count;
 

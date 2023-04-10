@@ -34,6 +34,7 @@ namespace Sales.Shared.Entities
 
         public ICollection<TemporalSale>? TemporalSales { get; set; }
 
+        public ICollection<Sale>? Sales { get; set; }
         public City? City { get; set; }
 
         [Display(Name = "Ciudad")]
