@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Sales.API.Data;
 using Sales.API.Helpers;
 using Sales.Shared.DTOs;
 using Sales.Shared.Entities;
@@ -20,14 +22,16 @@ namespace Sales.API.Controllers
         private readonly IFileStorage _fileStorage;
         private readonly IMailHelper _mailHelper;
         private readonly string _container;
+        private readonly DataContext _context;
 
-        public AccountsController(IUserHelper userHelper, IConfiguration configuration, IFileStorage fileStorage, IMailHelper mailHelper)
+        public AccountsController(IUserHelper userHelper, IConfiguration configuration, IFileStorage fileStorage, IMailHelper mailHelper, DataContext datacontext)
         {
             _userHelper = userHelper;
             _configuration = configuration;
             _fileStorage = fileStorage;
             _mailHelper = mailHelper;
             _container = "users";
+            _context = datacontext;
         }
 
         [HttpPost("CreateUser")]
@@ -87,6 +91,29 @@ namespace Sales.API.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("all")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult> GetAll([FromQuery] PaginationDTO pagination)
+        {
+            var queryable = _context.Users
+                .Include(u => u.City)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.FirstName.ToLower().Contains(pagination.Filter.ToLower()) ||
+                                                    x.LastName.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+            return Ok(await queryable
+                .OrderBy(x => x.FirstName)
+                .ThenBy(x => x.LastName)
+                .Paginate(pagination)
+                .ToListAsync());
+        }
+
+
 
 
         [HttpPost("ResedToken")]
@@ -294,6 +321,21 @@ namespace Sales.API.Controllers
             return BadRequest(result.Errors.FirstOrDefault()!.Description);
         }
 
+        [HttpGet("totalPages")]
+        public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
+        {
+            var queryable = _context.Users.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.FirstName.ToLower().Contains(pagination.Filter.ToLower()) ||
+                                                    x.LastName.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+            double count = await queryable.CountAsync();
+            double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
+            return Ok(totalPages);
+        }
 
     }
 }

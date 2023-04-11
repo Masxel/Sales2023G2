@@ -144,6 +144,11 @@
     private string? imageUrl;
     private bool loading = true;
 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool IsAdmin { get; set; }
+
+
     protected override async Task OnInitializedAsync()
     {
         await LoadCountriesAsync();
@@ -222,7 +227,15 @@
     {
         loading = true;
         userDTO.UserName = userDTO.Email;
-        userDTO.UserType = UserType.User;
+        if (IsAdmin)
+        {
+            userDTO.UserType = UserType.Admin;
+        }
+        else
+        {
+            userDTO.UserType = UserType.User;
+        }
+
         var responseHttp = await repository.Post<UserDTO, TokenDTO>("/api/accounts/CreateUser", userDTO);
         if (responseHttp.Error)
         {
